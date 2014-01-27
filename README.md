@@ -37,21 +37,32 @@ See the examples folder for a working demo.
 
 ## Getting Started ##
 
+### Install with Composer ###
+
+Here's the require line for Composer users...
+
+`"docnet/php-japi": "dev-master"`
+
+...or just download and use the src folder.
+
+### Entry Point (index.php) ###
+
 Assuming:
 
 - You've got Apache/whatever set up to route all requests to this file
-- An auto-loader is present (or you've included all files)
+- An auto-loader is present (like the Composer example here) or you've included all files necessary
 - Your controllers are not name spaced and you're happy with our default configuration
 
-then this is all the code you need
+then something like this is all the code you need
 
 ```php
 <?php
+require_once('vendor/autoload.php');
 $api = new \Docnet\JAPI();
 $api->run();
 ```
 
-See the examples folder for a working demo.
+See the examples folder for a working demo (api.php).
 
 ## Routing ##
 
