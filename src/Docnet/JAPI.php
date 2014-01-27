@@ -161,13 +161,14 @@ class JAPI
     }
 
     /**
-     * Get the start time as a microtime float
+     * Get the execution time in seconds, rounded
      *
+     * @param int $int_dp
      * @return float
      */
-    public static function get_start_time()
+    public static function getDuration($int_dp = 4)
     {
-        return self::$flt_startup;
+        return round(microtime(TRUE) - self::$flt_startup, $int_dp);
     }
 
 }
