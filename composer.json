@@ -1,0 +1,17 @@
+{
+    "name": "docnet/php-japi",
+    "type": "library",
+    "description": "Simple framework for building HTTP JSON APIs in PHP",
+    "keywords": ["docnet", "json", "http", "api"],
+    "homepage": "https://github.com/DocnetUK/php-japi",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    },
+    "include-path": ["src/"]
+}
