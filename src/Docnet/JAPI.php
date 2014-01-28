@@ -54,7 +54,9 @@ class JAPI
     public function __construct($obj_config = NULL)
     {
         register_shutdown_function(array($this, 'timeToDie'));
-        self::$obj_config = (NULL === $obj_config ? new JAPI\Config() : $obj_config);
+        if(NULL !== $obj_config) {
+            self::$obj_config = $obj_config;
+        }
         self::$flt_startup = (isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : microtime(TRUE));
     }
 
@@ -113,7 +115,7 @@ class JAPI
                 header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error", TRUE, 500);
         }
         if ($mix_message instanceof \Exception) {
-            $str_message = (self::$obj_config->isLive() ? 'Exception' : get_class($mix_message) . ': ' . $mix_message->getMessage());
+            $str_message = (self::getConfig()->isLive() ? 'Exception' : get_class($mix_message) . ': ' . $mix_message->getMessage());
         } elseif (is_string($mix_message)) {
             $str_message = $mix_message;
         } else {
@@ -157,6 +159,9 @@ class JAPI
      */
     public static function getConfig()
     {
+        if(NULL === self::$obj_config) {
+            self::$obj_config = new JAPI\Config();
+        }
         return self::$obj_config;
     }
 
