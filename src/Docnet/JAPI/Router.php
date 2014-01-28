@@ -166,7 +166,7 @@ class Router implements Interfaces\Router
      */
     private function parseController($str_controller)
     {
-        return JAPI::getConfig()->get('controller_namespace') . str_replace(" ", "", ucwords(str_replace("-", " ", $str_controller)));
+        return JAPI::getConfig()->get('controller_namespace') . str_replace(" ", "", ucwords(str_replace("-", " ", strtolower($str_controller))));
     }
 
     /**
@@ -177,7 +177,7 @@ class Router implements Interfaces\Router
      */
     private function parseAction($str_action)
     {
-        return lcfirst(str_replace(" ", "", ucwords(str_replace("-", " ", $str_action)))) . 'Action';
+        return lcfirst(str_replace(" ", "", ucwords(str_replace("-", " ", strtolower($str_action))))) . 'Action';
     }
 
     /**
@@ -191,6 +191,7 @@ class Router implements Interfaces\Router
     {
         $this->int_dispatch_count++;
         try {
+            /** @var \Docnet\JAPI\Controller $obj_controller */
             $obj_controller = new $this->str_controller();
             $obj_controller->preDispatch();
             call_user_func(array($obj_controller, $this->str_action));
@@ -199,6 +200,18 @@ class Router implements Interfaces\Router
         } catch (\Exception $obj_ex) {
             throw $obj_ex;
         }
+    }
+
+    /**
+     * Get the attempted routing (Controller & Action)
+     *
+     * Primarily here to support testing
+     *
+     * @return array
+     */
+    public function getRouting()
+    {
+        return array($this->str_controller, $this->str_action);
     }
 
 }
