@@ -1,6 +1,6 @@
-# PHP JSON API Framework #
+# PHP JSON API Library #
 
-Simple framework for building HTTP JSON APIs in PHP.
+Simple library for building HTTP JSON APIs in PHP.
 
 Sure, I know, there are loads of MVC frameworks out there - and a few very popular ones - that can do this for
 you and a lot more besides.
