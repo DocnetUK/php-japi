@@ -34,7 +34,7 @@ class Router implements Interfaces\Router
      *
      * @var string
      */
-    private $str_url = '';
+    protected $str_url = '';
 
     /**
      * Output from parse_url()
