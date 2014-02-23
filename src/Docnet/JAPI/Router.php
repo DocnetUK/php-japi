@@ -41,28 +41,28 @@ class Router implements Interfaces\Router
      *
      * @var array|mixed
      */
-    private $arr_url = array();
+    protected $arr_url = array();
 
     /**
      * Number of dispatch loops
      *
      * @var int
      */
-    private $int_dispatch_count = 0;
+    protected $int_dispatch_count = 0;
 
     /**
      * Controller class as determined by parseController()
      *
      * @var string
      */
-    private $str_controller = '';
+    protected $str_controller = '';
 
     /**
      * Action method as determined by parseAction()
      *
      * @var string
      */
-    private $str_action = '';
+    protected $str_action = '';
 
     /**
      * Static routes
