@@ -100,6 +100,16 @@ abstract class Controller
     }
 
     /**
+     * Get the request body as a JSON object
+     *
+     * @return mixed
+     */
+    protected function getJson()
+    {
+        return json_decode($this->getBody());
+    }
+
+    /**
      * Get a request parameter. Check GET then POST data.
      *
      * @param $str_key
