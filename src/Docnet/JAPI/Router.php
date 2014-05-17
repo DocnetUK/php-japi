@@ -34,35 +34,35 @@ class Router implements Interfaces\Router
      *
      * @var string
      */
-    private $str_url = '';
+    protected $str_url = '';
 
     /**
      * Output from parse_url()
      *
      * @var array|mixed
      */
-    private $arr_url = array();
+    protected $arr_url = array();
 
     /**
      * Number of dispatch loops
      *
      * @var int
      */
-    private $int_dispatch_count = 0;
+    protected $int_dispatch_count = 0;
 
     /**
      * Controller class as determined by parseController()
      *
      * @var string
      */
-    private $str_controller = '';
+    protected $str_controller = '';
 
     /**
      * Action method as determined by parseAction()
      *
      * @var string
      */
-    private $str_action = '';
+    protected $str_action = '';
 
     /**
      * Static routes
@@ -102,7 +102,7 @@ class Router implements Interfaces\Router
      *
      * @return bool
      */
-    private function static_route()
+    protected function static_route()
     {
         if (isset($this->arr_static_routes[$this->arr_url['path']])) {
             $this->setup(
@@ -149,7 +149,7 @@ class Router implements Interfaces\Router
      * @param $bol_parse
      * @throws Exceptions\Routing
      */
-    private function setup($str_controller, $str_action, $bol_parse = TRUE)
+    protected function setup($str_controller, $str_action, $bol_parse = TRUE)
     {
         $this->str_controller = ($bol_parse ? $this->parseController($str_controller) : $str_controller);
         $this->str_action = ($bol_parse ? $this->parseAction($str_action) : $str_action);
@@ -164,7 +164,7 @@ class Router implements Interfaces\Router
      * @param $str_controller
      * @return string
      */
-    private function parseController($str_controller)
+    protected function parseController($str_controller)
     {
         return JAPI::getConfig()->get('controller_namespace') . str_replace(" ", "", ucwords(str_replace("-", " ", strtolower($str_controller))));
     }
@@ -175,7 +175,7 @@ class Router implements Interfaces\Router
      * @param $str_action
      * @return string
      */
-    private function parseAction($str_action)
+    protected function parseAction($str_action)
     {
         return lcfirst(str_replace(" ", "", ucwords(str_replace("-", " ", strtolower($str_action))))) . 'Action';
     }
