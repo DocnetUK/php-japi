@@ -44,7 +44,7 @@ class JAPI
     /**
      * @var \Docnet\JAPI\Router
      */
-    private $obj_router = NULL;
+    private static $obj_router = NULL;
 
     /**
      * When creating a new JAPI, hook up the shutdown function and set Config
@@ -134,12 +134,12 @@ class JAPI
      *
      * @return JAPI\Router
      */
-    public function getRouter()
+    public static function getRouter()
     {
-        if (NULL === $this->obj_router) {
-            $this->obj_router = new \Docnet\JAPI\Router();
+        if (NULL === self::$obj_router) {
+            self::$obj_router = new \Docnet\JAPI\Router();
         }
-        return $this->obj_router;
+        return self::$obj_router;
     }
 
     /**
@@ -149,7 +149,7 @@ class JAPI
      */
     public function setRouter(\Docnet\JAPI\Interfaces\Router $obj_router)
     {
-        $this->obj_router = $obj_router;
+        self::$obj_router = $obj_router;
     }
 
     /**
