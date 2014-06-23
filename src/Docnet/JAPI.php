@@ -39,7 +39,7 @@ class JAPI
     /**
      * @var JAPI\Router
      */
-    private $obj_router = NULL;
+    private static $obj_router = NULL;
 
     /**
      * @var JAPI\Logger
@@ -140,12 +140,12 @@ class JAPI
      *
      * @return JAPI\Router
      */
-    public function getRouter()
+    public static function getRouter()
     {
-        if (NULL === $this->obj_router) {
-            $this->obj_router = new JAPI\Router();
+        if (NULL === self::$obj_router) {
+            self::$obj_router = new JAPI\Router();
         }
-        return $this->obj_router;
+        return self::$obj_router;
     }
 
     /**
@@ -155,7 +155,7 @@ class JAPI
      */
     public function setRouter(JAPI\Interfaces\Router $obj_router)
     {
-        $this->obj_router = $obj_router;
+        self::$obj_router = $obj_router;
     }
 
     /**
