@@ -37,14 +37,19 @@ class JAPI
     private static $obj_config = NULL;
 
     /**
-     * @var null
-     */
-    private static $flt_startup = NULL;
-
-    /**
-     * @var \Docnet\JAPI\Router
+     * @var JAPI\Router
      */
     private static $obj_router = NULL;
+
+    /**
+     * @var JAPI\Logger
+     */
+    private $obj_logger = NULL;
+
+    /**
+     * @var null|float
+     */
+    private static $flt_startup = NULL;
 
     /**
      * When creating a new JAPI, hook up the shutdown function and set Config
@@ -82,7 +87,6 @@ class JAPI
      * Custom shutdown function
      *
      * @todo Consider checking if headers have already been sent
-     * @todo Consider checking isLive before outputting message
      */
     public function timeToDie()
     {
@@ -115,17 +119,19 @@ class JAPI
                 header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error", TRUE, 500);
         }
         if ($mix_message instanceof \Exception) {
-            $str_message = (self::getConfig()->isLive() ? 'Exception' : get_class($mix_message) . ': ' . $mix_message->getMessage());
+            $str_log = get_class($mix_message) . ': ' . $mix_message->getMessage();
+            $str_message = self::getConfig()->isLive() ? 'Exception' : $str_log;
         } elseif (is_string($mix_message)) {
-            $str_message = $mix_message;
+            $str_log = $str_message = $mix_message;
         } else {
-            $str_message = 'Unknown error';
+            $str_log = $str_message = 'Unknown error';
         }
         header('Content-type: application/json');
         echo json_encode(array(
             'response' => (int)$int_code,
             'msg' => $str_message
         ));
+        $this->log(LOG_ERR, "[JAPI exiting with {$int_code}] " . $str_log);
         exit();
     }
 
@@ -137,7 +143,7 @@ class JAPI
     public static function getRouter()
     {
         if (NULL === self::$obj_router) {
-            self::$obj_router = new \Docnet\JAPI\Router();
+            self::$obj_router = new JAPI\Router();
         }
         return self::$obj_router;
     }
@@ -147,7 +153,7 @@ class JAPI
      *
      * @param JAPI\Interfaces\Router $obj_router
      */
-    public function setRouter(\Docnet\JAPI\Interfaces\Router $obj_router)
+    public function setRouter(JAPI\Interfaces\Router $obj_router)
     {
         self::$obj_router = $obj_router;
     }
@@ -174,6 +180,30 @@ class JAPI
     public static function getDuration($int_dp = 4)
     {
         return round(microtime(TRUE) - self::$flt_startup, $int_dp);
+    }
+
+    /**
+     * Log to the current Logger, create one if needed
+     *
+     * @param $int_level
+     * @param $str_message
+     */
+    protected function log($int_level, $str_message)
+    {
+        if(NULL === $this->obj_logger) {
+            $this->obj_logger = new JAPI\Logger();
+        }
+        $this->obj_logger->log($int_level, $str_message);
+    }
+
+    /**
+     * Set a custom Logger
+     *
+     * @param JAPI\Interfaces\Logger $obj_logger
+     */
+    public function setLogger(JAPI\Interfaces\Logger $obj_logger)
+    {
+        $this->obj_logger = $obj_logger;
     }
 
 }
