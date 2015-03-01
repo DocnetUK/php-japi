@@ -154,7 +154,7 @@ class Router implements Interfaces\Router
         $this->str_controller = ($bol_parse ? $this->parseController($str_controller) : $str_controller);
         $this->str_action = ($bol_parse ? $this->parseAction($str_action) : $str_action);
         if (!method_exists($this->str_controller, $this->str_action)) {
-            throw new Exceptions\Routing("Could not find controller/action pair");
+            throw new Exceptions\Routing("Could not find controller/action pair: {$this->str_controller}/{$this->str_action}");
         }
     }
 
