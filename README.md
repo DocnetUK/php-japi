@@ -41,7 +41,7 @@ See the examples folder for a working demo.
 
 Here's the require line for Composer users...
 
-`"docnet/php-japi": "dev-master"`
+`"docnet/php-japi": "v1.1.1"`
 
 ...or just download and use the src folder.
 
