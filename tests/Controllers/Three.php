@@ -1,6 +1,6 @@
 <?php
-namespace Hello;
-class World extends \Docnet\JAPI\Controller
+namespace One\Two;
+class Three extends \Docnet\JAPI\Controller
 {
     public function dispatch(){}
 }

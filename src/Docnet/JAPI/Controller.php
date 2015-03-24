@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2014 Docnet
+ * Copyright 2015 Docnet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ abstract class Controller
      */
     protected function getHeaders()
     {
-        if (PHP_VERSION_ID >= 50400 || function_exists('getallheaders')) {
+        if (function_exists('getallheaders')) {
             return getallheaders();
         }
         $arr_headers = array();
@@ -154,18 +154,6 @@ abstract class Controller
     }
 
     /**
-     * Issue the JSON response
-     *
-     * @todo How to deal with NULL?
-     */
-    public function jsonResponse()
-    {
-        header('Content-type: application/json');
-        echo json_encode($this->obj_response);
-        //exit();
-    }
-
-    /**
      * Set the response object
      *
      * @param $obj_response
@@ -174,5 +162,22 @@ abstract class Controller
     {
         $this->obj_response = $obj_response;
     }
+
+    /**
+     * Get the response data
+     *
+     * @return object|array
+     */
+    public function getResponse()
+    {
+        return $this->obj_response;
+    }
+
+    /**
+     * Main dispatch method
+     *
+     * @return mixed
+     */
+    abstract function dispatch();
 
 }

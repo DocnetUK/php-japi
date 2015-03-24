@@ -1,17 +1,25 @@
 {
     "name": "docnet/php-japi",
     "type": "library",
-    "description": "Simple framework for building HTTP JSON APIs in PHP",
+    "description": "Simple framework for building HTTP JSON APIs in PHP. 2.",
+    "authors": [
+        {
+            "name": "Tom Walder",
+            "email": "tom@docnet.nu"
+        }
+    ],
     "keywords": ["docnet", "json", "http", "api"],
     "homepage": "https://github.com/DocnetUK/php-japi",
     "license": "Apache-2.0",
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.4.0",
+        "psr/log": "~1.0"
     },
     "autoload": {
         "classmap": [
             "src/"
-        ]
+        ],
+        "psr-4": {"Docnet\\": "src/Docnet/"}
     },
     "include-path": ["src/"]
 }

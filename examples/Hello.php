@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2014 Docnet
+ * Copyright 2015 Docnet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ class Hello extends \Docnet\JAPI\Controller
     /**
      * Hello, World!
      */
-    public function worldAction()
+    public function dispatch()
     {
         $this->setResponse(array(
             'message' => 'Hello, World!'

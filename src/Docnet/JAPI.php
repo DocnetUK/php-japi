@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2014 Docnet
+ * Copyright 2015 Docnet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
  */
 namespace Docnet;
 
-use \Docnet\JAPI\Exceptions\Routing as RoutingException;
-use \Docnet\JAPI\Exceptions\Auth as AuthException;
+use Docnet\JAPI\Controller;
+use Docnet\JAPI\Exceptions\Routing as RoutingException;
+use Docnet\JAPI\Exceptions\Auth as AuthException;
+use Psr\Log\LoggerAwareInterface;
 
 /**
  * Front controller for our JSON APIs
@@ -28,70 +30,60 @@ use \Docnet\JAPI\Exceptions\Auth as AuthException;
  *
  * @author Tom Walder <tom@docnet.nu>
  */
-class JAPI
+class JAPI implements LoggerAwareInterface
 {
 
-    /**
-     * @var JAPI\Config
-     */
-    private static $obj_config = NULL;
+    use HasLogger;
 
     /**
-     * @var JAPI\Router
+     * Hook up the shutdown function so we always send nice JSON error responses
      */
-    private static $obj_router = NULL;
-
-    /**
-     * @var JAPI\Logger
-     */
-    private $obj_logger = NULL;
-
-    /**
-     * @var null|float
-     */
-    private static $flt_startup = NULL;
-
-    /**
-     * When creating a new JAPI, hook up the shutdown function and set Config
-     *
-     * @param null|JAPI\Config $obj_config
-     */
-    public function __construct($obj_config = NULL)
+    public function __construct()
     {
-        register_shutdown_function(array($this, 'timeToDie'));
-        if(NULL !== $obj_config) {
-            self::$obj_config = $obj_config;
-        }
-        self::$flt_startup = (isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : microtime(TRUE));
+        register_shutdown_function([$this, 'timeToDie']);
     }
 
     /**
-     * Go, Johnny, Go!
+     * Optionally, encapsulate the bootstrap in a try/catch
+     *
+     * @param $fnc_strap
      */
-    public function run()
+    public function bootstrap($fnc_strap)
     {
         try {
-            $obj_router = $this->getRouter();
-            $obj_router->route();
-            $obj_router->dispatch();
+            if(!is_callable($fnc_strap)) {
+                throw new \Exception('Unable to bootstrap');
+            }
+            $this->dispatch($fnc_strap());
         } catch (RoutingException $obj_ex) {
             $this->jsonError($obj_ex, 404);
         } catch (AuthException $obj_ex) {
             $this->jsonError($obj_ex, 401);
         } catch (\Exception $obj_ex) {
-            $this->jsonError($obj_ex);
+            $this->jsonError($obj_ex, 500);
         }
     }
 
     /**
-     * Custom shutdown function
+     * Go, Johnny, Go!
      *
-     * @todo Consider checking if headers have already been sent
+     * @param Controller $obj_controller
+     */
+    public function dispatch(Controller $obj_controller)
+    {
+        $obj_controller->preDispatch();
+        $obj_controller->dispatch();
+        $obj_controller->postDispatch();
+        $this->sendResponse($obj_controller->getResponse());
+    }
+
+    /**
+     * Custom shutdown function
      */
     public function timeToDie()
     {
         $arr_error = error_get_last();
-        if ($arr_error && in_array($arr_error['type'], array(E_ERROR, E_USER_ERROR, E_COMPILE_ERROR))) {
+        if ($arr_error && in_array($arr_error['type'], [E_ERROR, E_USER_ERROR, E_COMPILE_ERROR])) {
             $this->jsonError($arr_error['message']);
         }
     }
@@ -99,111 +91,52 @@ class JAPI
     /**
      * Whatever went wrong, let 'em have it in JSON
      *
-     * One day...
-     * @see http://www.php.net/manual/en/function.http-response-code.php
+     * @todo Environment or LIVE check
      *
      * @param string|\Exception $mix_message
      * @param int $int_code
      */
     protected function jsonError($mix_message = NULL, $int_code = 500)
     {
+        $int_code = (int)$int_code;
         switch ($int_code) {
             case 401:
-                header($_SERVER["SERVER_PROTOCOL"] . " 401 Unauthorized", TRUE, 401);
-                break;
             case 404:
-                header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", TRUE, 404);
-                break;
             case 500:
+                http_response_code($int_code);
+                break;
             default:
-                header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error", TRUE, 500);
+                http_response_code(500);
         }
+        $arr_response = [
+            'code' => $int_code,
+            'msg' => 'Internal error'
+        ];
         if ($mix_message instanceof \Exception) {
-            $str_log = get_class($mix_message) . ': ' . $mix_message->getMessage();
-            $str_message = self::getConfig()->isLive() ? 'Exception' : $str_log;
+            $arr_response['msg'] = 'Exception';
+            $str_log_message = get_class($mix_message) . ': ' . $mix_message->getMessage();
+            if(TRUE) { // @todo Environment or LIVE check
+                $arr_response['detail'] = $str_log_message;
+            }
         } elseif (is_string($mix_message)) {
-            $str_log = $str_message = $mix_message;
+            $str_log_message = $mix_message;
         } else {
-            $str_log = $str_message = 'Unknown error';
+            $str_log_message = '';
         }
-        header('Content-type: application/json');
-        echo json_encode(array(
-            'response' => (int)$int_code,
-            'msg' => $str_message
-        ));
-        $this->log(LOG_ERR, "[JAPI exiting with {$int_code}] " . $str_log);
+        $this->sendResponse($arr_response);
+        $this->getLogger()->error("[JAPI exiting with {$int_code}] " . $str_log_message);
         exit();
     }
 
     /**
-     * Get the Router
+     * Output the response
      *
-     * @return JAPI\Router
+     * @param $response
      */
-    public static function getRouter()
+    protected function sendResponse($response)
     {
-        if (NULL === self::$obj_router) {
-            self::$obj_router = new JAPI\Router();
-        }
-        return self::$obj_router;
-    }
-
-    /**
-     * Set a custom Router
-     *
-     * @param JAPI\Interfaces\Router $obj_router
-     */
-    public function setRouter(JAPI\Interfaces\Router $obj_router)
-    {
-        self::$obj_router = $obj_router;
-    }
-
-    /**
-     * Get the running config
-     *
-     * @return JAPI\Config|null
-     */
-    public static function getConfig()
-    {
-        if(NULL === self::$obj_config) {
-            self::$obj_config = new JAPI\Config();
-        }
-        return self::$obj_config;
-    }
-
-    /**
-     * Get the execution time in seconds, rounded
-     *
-     * @param int $int_dp
-     * @return float
-     */
-    public static function getDuration($int_dp = 4)
-    {
-        return round(microtime(TRUE) - self::$flt_startup, $int_dp);
-    }
-
-    /**
-     * Log to the current Logger, create one if needed
-     *
-     * @param $int_level
-     * @param $str_message
-     */
-    protected function log($int_level, $str_message)
-    {
-        if(NULL === $this->obj_logger) {
-            $this->obj_logger = new JAPI\Logger();
-        }
-        $this->obj_logger->log($int_level, $str_message);
-    }
-
-    /**
-     * Set a custom Logger
-     *
-     * @param JAPI\Interfaces\Logger $obj_logger
-     */
-    public function setLogger(JAPI\Interfaces\Logger $obj_logger)
-    {
-        $this->obj_logger = $obj_logger;
+        header('Content-type: application/json');
+        echo json_encode($response);
     }
 
 }
