@@ -1,18 +1,20 @@
 # PHP JSON API Library #
 
-Simple library for building HTTP JSON APIs in PHP.
+Version 2 of our library for building HTTP JSON APIs in PHP.
 
-Sure, I know, there are loads of MVC frameworks out there - and a few very popular ones - that can do this for
-you and a lot more besides.
+`php-japi` is designed to ONLY do HTTP JSON APIs, so it's small and fast.
 
-BUT, `php-japi` is designed to ONLY do HTTP JSON APIs, so it's small and fast.
+Some major changes in version 2
+- Adopt better code practices, allowing for Dependency Injection
+- Adopt our new "Single Responsibility Controller" approach
+- Decouple Router from JAPI container
+- Use PSR logging
+- Adopt PHP 5.4 minimum version
 
 As we expand our Service Orientated Architecture (SOA) at Docnet, we're using this more and more - so I hope it's useful
 to someone else ;)
 
 Intended to use HTTP status codes wherever possible for passing success/failure etc. back to the client.
-
-Data/payload is your responsibility!
 
 ## Hello, World! ##
 
@@ -24,11 +26,11 @@ So, here's the JAPI controller we'll need:
 <?php
 class Hello extends \Docnet\JAPI\Controller
 {
-    public function worldAction()
+    public function dispatch()
     {
-        $this->setResponse(array(
+        $this->setResponse([
             'message' =>'Hello, World!'
-        ));
+        ]);
     }
 }
 ```
@@ -41,7 +43,7 @@ See the examples folder for a working demo.
 
 Here's the require line for Composer users...
 
-`"docnet/php-japi": "v1.1.1"`
+`"docnet/php-japi": "v2.0.0"`
 
 ...or just download and use the src folder.
 
@@ -57,9 +59,7 @@ then something like this is all the code you need
 
 ```php
 <?php
-require_once('vendor/autoload.php');
-$api = new \Docnet\JAPI();
-$api->run();
+// @todo update for v2
 ```
 
 See the examples folder for a working demo (api.php).
@@ -93,21 +93,14 @@ Add a single custom route
 
 ```php
 <?php
-$api = new \Docnet\JAPI();
-$api->getRouter()->addRoute('/goodbye', 'Hello', 'worldAction');
-$api->run();
+// @todo update for v2
 ```
 
 Or set a load of them
 
 ```php
 <?php
-$api = new \Docnet\JAPI();
-$api->getRouter()->setRoutes(array(
-    '/goodbye'  => array('Hello', 'worldAction'),
-    '/testing'  => array('SomeController', 'testAction'),
-));
-$api->run();
+// @todo update for v2
 ```
 
 ### Custom Router ###
@@ -120,9 +113,7 @@ There's a Router interface and you can follow and you can change the router thro
 
 ```php
 <?php
-$api = new \Docnet\JAPI();
-$api->setRouter(new MyAwesomeRouter());
-$api->run();
+// @todo update for v2
 ```
 
 ## Coding Standards ##
