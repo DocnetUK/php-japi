@@ -41,9 +41,9 @@ See the examples folder for a working demo.
 
 ### Install with Composer ###
 
-Here's the require line for Composer users...
+Here's the require line for Composer users (during 2-series development)...
 
-`"docnet/php-japi": "v2.0.0"`
+`"docnet/php-japi": "2.0.*@dev"`
 
 ...or just download and use the src folder.
 
