@@ -21,17 +21,17 @@ Intended to use HTTP status codes wherever possible for passing success/failure 
 We've adopted a new (for us) take on routing and controller complexity in 2.0. As such, where previously, you might have 
 had multiple actions (methods) on the same class like this:
 
-`BasketController::fetchDetailAction()`
-`BasketController::addAction()`
-`BasketController::removeAction()`
-`BasketController::emptyAction()`
+- `BasketController::fetchDetailAction()`
+- `BasketController::addAction()`
+- `BasketController::removeAction()`
+- `BasketController::emptyAction()`
 
 Now this would be 4 name-spaced classes, like this
 
-`Basket\FetchDetailController`
-`Basket\AddController`
-`Basket\RemoveController`
-`Basket\EmptyController`
+- `Basket\FetchDetailController`
+- `Basket\AddController`
+- `Basket\RemoveController`
+- `Basket\EmptyController`
 
 This allows for 
 - Greater code modularity
@@ -39,6 +39,24 @@ This allows for
 - Much easier Dependency Injection via `__construct()`
 
 You can still share common code via extension/composition - whatever takes your fancy!
+
+### Routing ###
+
+The bundled router will accept any depth of controller namespace, like this
+
+- `/one` => `One`
+- `/one/two` => `One\Two`
+- `/one/two/three` => `One\Two\Three`
+
+When you construct the Router, you can give it a "root" namspace, like this:
+
+```php
+$router = new \Docnet\JAPI\SolidRouter('\\Docnet\\App\\Controller\\');
+```
+
+Which results in this routing:
+
+- `/one/two` => `\Docnet\App\Controller\One\Two`
 
 ## Hello, World! ##
 
