@@ -28,10 +28,10 @@ had multiple actions (methods) on the same class like this:
 
 Now this would be 4 name-spaced classes, like this
 
-- `Basket\FetchDetailController`
-- `Basket\AddController`
-- `Basket\RemoveController`
-- `Basket\EmptyController`
+- `Basket\FetchDetail`
+- `Basket\Add`
+- `Basket\Remove`
+- `Basket\Empty`
 
 This allows for 
 - Greater code modularity
@@ -112,26 +112,6 @@ then something like this is all the code you need
 ```
 
 See the examples folder for a working demo (api.php).
-
-## Routing ##
-
-The standard routing is quite strict, and (at the time ot writing) expects a controller + action pair for all requests.
-
-e.g. `api.example.com/hello/world`
-
-URLs without a 2-part controller + action pair will result in a 404, such as
-
-- `api.example.com`
-- `api.example.com/`
-- `api.example.com/controller`
-
-We do conversion to `StudlyCaps` classes and `camelCase` methods, splitting on hyphens and suffix 'Action' for the
-method. e.g.
-
-- `api.example.com/hello/world` becomes `Hello::worldAction()`
-- `api.example.com/hello-world/long-name` becomes `HelloWorld::longNameAction()`
-
-I seem to recall this is similar to ZF1.
 
 ### Static Routes ###
 
