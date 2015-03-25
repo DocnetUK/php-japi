@@ -1,4 +1,4 @@
-[![Build status][2.1 image]][2.1]
+[![Build Status](https://api.travis-ci.org/DocnetUK/php-japi.svg?branch=2.0)](https://travis-ci.org/DocnetUK/php-japi)
 
 # PHP JSON API Library #
 
