@@ -16,17 +16,41 @@ to someone else ;)
 
 Intended to use HTTP status codes wherever possible for passing success/failure etc. back to the client.
 
+## Single Responsibility Controller ##
+
+We've adopted a new (for us) take on routing and controller complexity in 2.0. As such, where previously, you might have 
+had multiple actions (methods) on the same class like this:
+
+`BasketController::fetchDetailAction()`
+`BasketController::addAction()`
+`BasketController::removeAction()`
+`BasketController::emptyAction()`
+
+Now this would be 4 name-spaced classes, like this
+
+`Basket\FetchDetailController`
+`Basket\AddController`
+`Basket\RemoveController`
+`Basket\EmptyController`
+
+This allows for 
+- Greater code modularity
+- Smaller classes
+- Much easier Dependency Injection via `__construct()`
+
+You can still share common code via extension/composition - whatever takes your fancy!
+
 ## Hello, World! ##
 
 Let's assume we want our API to respond on the following URL: `api.example.com/hello/world`
 
-So, here's the JAPI controller we'll need:
+So, here's a JAPI controller we'll need:
 
 ```php
-<?php
-class Hello extends \Docnet\JAPI\Controller
+namespace Hello;
+class World extends \Docnet\JAPI\Controller
 {
-    public function dispatch()
+    public function dispatch() // <-- method declared Abstract in the JAPI Controller
     {
         $this->setResponse([
             'message' =>'Hello, World!'
@@ -58,8 +82,15 @@ Assuming:
 then something like this is all the code you need
 
 ```php
-<?php
-// @todo update for v2
+(new \Docnet\JAPI())->bootstrap(function(){
+
+    $obj_router = new \Docnet\JAPI\SolidRouter();
+    $obj_router->route();
+
+    $str_controller = $obj_router->getController();
+    return new $str_controller();
+
+});
 ```
 
 See the examples folder for a working demo (api.php).
