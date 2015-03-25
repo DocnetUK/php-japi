@@ -1,3 +1,5 @@
+[![Build status][2.1 image]][2.1]
+
 # PHP JSON API Library #
 
 Version 2 of our library for building HTTP JSON APIs in PHP.
