@@ -8,6 +8,9 @@ require_once('Controllers/HeardYoLike.php');
 class SolidRouterTest extends PHPUnit_Framework_TestCase
 {
 
+    /**
+     * Single word route test
+     */
     public function testOneWord()
     {
         $obj_router = new \Docnet\JAPI\SolidRouter();
@@ -15,6 +18,9 @@ class SolidRouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($obj_router->getController(), '\Example');
     }
 
+    /**
+     * Two word route test
+     */
     public function testTwoWord()
     {
         $obj_router = new \Docnet\JAPI\SolidRouter();
@@ -22,6 +28,9 @@ class SolidRouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($obj_router->getController(), '\Hello\World');
     }
 
+    /**
+     * Three word route test
+     */
     public function testThreeWord()
     {
         $obj_router = new \Docnet\JAPI\SolidRouter();
@@ -29,6 +38,9 @@ class SolidRouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($obj_router->getController(), '\One\Two\Three');
     }
 
+    /**
+     * Ensure casing does not affect routing
+     */
     public function testCasing()
     {
         $obj_router = new \Docnet\JAPI\SolidRouter();
@@ -36,6 +48,9 @@ class SolidRouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($obj_router->getController(), '\Hello\World');
     }
 
+    /**
+     * Evaluate hyphens work as expected in routing
+     */
     public function testHyphens()
     {
         $obj_router = new \Docnet\JAPI\SolidRouter();
@@ -43,6 +58,9 @@ class SolidRouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($obj_router->getController(), '\YoDawg\HeardYoLike');
     }
 
+    /**
+     * Mixed casing and hyphen test
+     */
     public function testHyphenCasing()
     {
         $obj_router = new \Docnet\JAPI\SolidRouter();
@@ -50,6 +68,9 @@ class SolidRouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($obj_router->getController(), '\YoDawg\HeardYoLike');
     }
 
+    /**
+     * Basic static route test
+     */
     public function testOneStatic()
     {
         $obj_router = new \Docnet\JAPI\SolidRouter();
@@ -58,6 +79,9 @@ class SolidRouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($obj_router->getController(), '\Hello\World');
     }
 
+    /**
+     * Multiple static routes
+     */
     public function testSetStatic()
     {
         $obj_router = new \Docnet\JAPI\SolidRouter();
@@ -69,6 +93,17 @@ class SolidRouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($obj_router->getController(), '\Hello\World');
         $obj_router->route('/test');
         $this->assertEquals($obj_router->getController(), '\YoDawg\HeardYoLike');
+    }
+
+    /**
+     * Test for failed routing
+     *
+     * @expectedException \Docnet\JAPI\Exceptions\Routing
+     */
+    public function testRoutingFailure()
+    {
+        $obj_router = new \Docnet\JAPI\SolidRouter();
+        $obj_router->route('/missing-url');
     }
 
 }
