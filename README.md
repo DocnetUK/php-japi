@@ -4,8 +4,6 @@
 
 Version 2 of our library for building HTTP JSON APIs in PHP.
 
-`php-japi` is designed to ONLY do HTTP JSON APIs, so it's small and fast.
-
 Some major changes in version 2
 - Adopt better code practices, allowing for Dependency Injection
 - Adopt our new "Single Responsibility Controller" approach
@@ -93,13 +91,12 @@ Here's the require line for Composer users (during 2-series development)...
 
 ### Entry Point (index.php) ###
 
-Assuming:
+Assuming...
 
 - You've got Apache/whatever set up to route all requests to this file
 - An auto-loader is present (like the Composer example here) or you've included all files necessary
-- Your controllers are not name spaced and you're happy with our default configuration
 
-then something like this is all the code you need
+...then something like this is all the code you need
 
 ```php
 (new \Docnet\JAPI())->bootstrap(function(){
