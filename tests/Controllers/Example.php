@@ -2,5 +2,7 @@
 
 class Example extends \Docnet\JAPI\Controller
 {
-    public function dispatch(){}
+    public function dispatch(){
+        $this->setResponse(['test' => TRUE]);
+    }
 }

@@ -1,9 +1,9 @@
 <?php
 
-require('Controllers/Example.php');
-require('Controllers/World.php');
-require('Controllers/Three.php');
-require('Controllers/HeardYoLike.php');
+require_once('Controllers/Example.php');
+require_once('Controllers/World.php');
+require_once('Controllers/Three.php');
+require_once('Controllers/HeardYoLike.php');
 
 class SolidRouterTest extends PHPUnit_Framework_TestCase
 {
