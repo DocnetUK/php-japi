@@ -50,4 +50,25 @@ class SolidRouterTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($obj_router->getController(), '\YoDawg\HeardYoLike');
     }
 
+    public function testOneStatic()
+    {
+        $obj_router = new \Docnet\JAPI\SolidRouter();
+        $obj_router->addRoute('/testing-url', '\\Hello\\World');
+        $obj_router->route('/testing-url');
+        $this->assertEquals($obj_router->getController(), '\Hello\World');
+    }
+
+    public function testSetStatic()
+    {
+        $obj_router = new \Docnet\JAPI\SolidRouter();
+        $obj_router->setRoutes([
+            '/testing-url' => '\\Hello\\World',
+            '/test' => '\\YoDawg\\HeardYoLike'
+        ]);
+        $obj_router->route('/testing-url');
+        $this->assertEquals($obj_router->getController(), '\Hello\World');
+        $obj_router->route('/test');
+        $this->assertEquals($obj_router->getController(), '\YoDawg\HeardYoLike');
+    }
+
 }
