@@ -1,6 +1,7 @@
 <?php
 
 require_once('Controllers/Example.php');
+require_once('Controllers/Exceptional.php');
 
 class ControllerTest extends PHPUnit_Framework_TestCase
 {
