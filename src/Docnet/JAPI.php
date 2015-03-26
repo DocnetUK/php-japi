@@ -46,21 +46,27 @@ class JAPI implements LoggerAwareInterface
     /**
      * Optionally, encapsulate the bootstrap in a try/catch
      *
-     * @param $fnc_strap
+     * @param $controller_source
      */
-    public function bootstrap($fnc_strap)
+    public function bootstrap($controller_source)
     {
         try {
-            if(!is_callable($fnc_strap)) {
+            if (is_callable($controller_source)) {
+                $obj_controller = $controller_source();
+            } else {
+                $obj_controller = $controller_source;
+            }
+            if($obj_controller instanceof Controller) {
+                $this->dispatch($obj_controller);
+            } else {
                 throw new \Exception('Unable to bootstrap');
             }
-            $this->dispatch($fnc_strap());
         } catch (RoutingException $obj_ex) {
             $this->jsonError($obj_ex, 404);
         } catch (AuthException $obj_ex) {
             $this->jsonError($obj_ex, 401);
         } catch (\Exception $obj_ex) {
-            $this->jsonError($obj_ex, 500);
+            $this->jsonError($obj_ex, $obj_ex->getCode());
         }
     }
 
@@ -99,15 +105,7 @@ class JAPI implements LoggerAwareInterface
     protected function jsonError($mix_message = NULL, $int_code = 500)
     {
         $int_code = (int)$int_code;
-        switch ($int_code) {
-            case 401:
-            case 404:
-            case 500:
-                http_response_code($int_code);
-                break;
-            default:
-                http_response_code(500);
-        }
+        http_response_code($int_code);
         $arr_response = [
             'code' => $int_code,
             'msg' => 'Internal error'
