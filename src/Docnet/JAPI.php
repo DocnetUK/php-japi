@@ -51,15 +51,11 @@ class JAPI implements LoggerAwareInterface
     public function bootstrap($controller_source)
     {
         try {
-            if (is_callable($controller_source)) {
-                $obj_controller = $controller_source();
-            } else {
-                $obj_controller = $controller_source;
-            }
+            $obj_controller = is_callable($controller_source) ? $controller_source() : $controller_source;
             if($obj_controller instanceof Controller) {
                 $this->dispatch($obj_controller);
             } else {
-                throw new \Exception('Unable to bootstrap');
+                throw new \Exception('Unable to bootstrap', 500);
             }
         } catch (RoutingException $obj_ex) {
             $this->jsonError($obj_ex, 404);
@@ -90,48 +86,41 @@ class JAPI implements LoggerAwareInterface
     {
         $arr_error = error_get_last();
         if ($arr_error && in_array($arr_error['type'], [E_ERROR, E_USER_ERROR, E_COMPILE_ERROR])) {
-            $this->jsonError($arr_error['message']);
+            $this->jsonError(new \ErrorException($arr_error['message'], 500, 0, $arr_error['file'], $arr_error['line']), 500);
         }
     }
 
     /**
-     * Whatever went wrong, let 'em have it in JSON
+     * Whatever went wrong, let 'em have it in JSON over HTTP
      *
-     * @todo Environment or LIVE check
+     * @todo Environment or LIVE check for extended error
      *
-     * @param string|\Exception $mix_message
+     * @param \Exception $obj_error
      * @param int $int_code
      */
-    protected function jsonError($mix_message = NULL, $int_code = 500)
+    protected function jsonError(\Exception $obj_error, $int_code)
     {
-        $int_code = (int)$int_code;
-        http_response_code($int_code);
         $arr_response = [
             'code' => $int_code,
-            'msg' => 'Internal error'
+            'msg' => ($obj_error instanceof \ErrorException ? 'Internal Error' : 'Exception')
         ];
-        if ($mix_message instanceof \Exception) {
-            $arr_response['msg'] = 'Exception';
-            $str_log_message = get_class($mix_message) . ': ' . $mix_message->getMessage();
-            if(TRUE) { // @todo Environment or LIVE check
-                $arr_response['detail'] = $str_log_message;
-            }
-        } elseif (is_string($mix_message)) {
-            $str_log_message = $mix_message;
-        } else {
-            $str_log_message = '';
+        $str_log_message = get_class($obj_error) . ': ' . $obj_error->getMessage();
+        if(TRUE) { // @todo Environment or LIVE check
+            $arr_response['detail'] = $str_log_message;
         }
-        $this->sendResponse($arr_response);
-        $this->getLogger()->error("[JAPI exiting with {$int_code}] " . $str_log_message);
+        $this->sendResponse($arr_response, $int_code);
+        $this->getLogger()->error("[JAPI] [{$int_code}] Error: {$str_log_message}");
     }
 
     /**
-     * Output the response
+     * Output the response as JSON with HTTP headers
      *
-     * @param $response
+     * @param array|object $response
+     * @param int $http_code
      */
-    protected function sendResponse($response)
+    protected function sendResponse($response, $http_code = 200)
     {
+        http_response_code($http_code);
         header('Content-type: application/json');
         echo json_encode($response);
     }
