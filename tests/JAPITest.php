@@ -94,10 +94,31 @@ class JAPITest extends PHPUnit_Framework_TestCase
     {
         // Mock JAPI
         $obj_japi = $this->getMockBuilder('\\Docnet\\JAPI')->setMethods(['sendResponse'])->getMock();
-        $obj_japi->expects($this->once())->method('sendResponse')->with($this->equalTo(['test' => TRUE]));
+        $obj_japi->expects($this->once())->method('sendResponse')->with(
+            $this->equalTo(['test' => TRUE])
+        );
 
         // Dispatch
         $obj_japi->bootstrap(new Example());
+    }
+
+    /**
+     * Do we correctly call the logger in jsonError scenarios?
+     */
+    public function testLogger()
+    {
+        // Mock the logger
+        $obj_logger = $this->getMockBuilder('\\Psr\\Log\\NullLogger')->setMethods(['log'])->getMock();
+        $obj_logger->expects($this->once())->method('log')->with(
+            $this->equalTo(\Psr\Log\LogLevel::ERROR)
+        );
+
+        // Mock JAPI
+        $obj_japi = $this->getMockBuilder('\\Docnet\\JAPI')->setMethods(['sendResponse'])->getMock();
+        $obj_japi->setLogger($obj_logger);
+
+        // Dispatch
+        $obj_japi->bootstrap(new Exceptional());
     }
 
 }
