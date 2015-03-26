@@ -36,7 +36,7 @@ Now this would be 4 name-spaced classes, like this
 This allows for 
 - Greater code modularity
 - Smaller classes
-- Much easier Dependency Injection via `__construct()`
+- Much easier Dependency Injection via `__construct()` as each "action" is it's own class.
 
 You can still share common code via extension/composition - whatever takes your fancy!
 
@@ -75,7 +75,6 @@ $router->addRoute('/hello', '\\Some\\Controller');
 Or set a load of them
 
 ```php
-<?php
 $router = new \Docnet\JAPI\SolidRouter();
 $router->setRoutes([
     '/hello' => '\\Some\\Controller',
@@ -116,6 +115,4 @@ See the examples folder for a working demo (api.php).
 
 ## Coding Standards ##
 
-Desired adherence to [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md).
-
-Uses [PSR-3](https://github.com/php-fig/log) logging
+Desired adherence to [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md). Uses [PSR-3](https://github.com/php-fig/log) logging.
