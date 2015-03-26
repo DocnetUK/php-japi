@@ -112,9 +112,9 @@ abstract class Controller
     /**
      * Get a request parameter. Check GET then POST data.
      *
-     * @param $str_key
-     * @param null $str_default
-     * @return null
+     * @param string $str_key
+     * @param mixed $str_default
+     * @return mixed
      */
     protected function getParam($str_key, $str_default = NULL)
     {
@@ -132,9 +132,9 @@ abstract class Controller
     /**
      * Get a Query/GET input parameter
      *
-     * @param $str_key
-     * @param null $str_default
-     * @return null
+     * @param string $str_key
+     * @param mixed $str_default
+     * @return mixed
      */
     protected function getQuery($str_key, $str_default = NULL)
     {
@@ -144,9 +144,9 @@ abstract class Controller
     /**
      * Get a POST parameter
      *
-     * @param $str_key
-     * @param null $str_default
-     * @return null
+     * @param string $str_key
+     * @param mixed $str_default
+     * @return mixed
      */
     protected function getPost($str_key, $str_default = NULL)
     {

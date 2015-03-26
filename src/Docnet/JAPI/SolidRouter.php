@@ -150,7 +150,7 @@ class SolidRouter
      *
      * @param string $str_path
      * @param string $str_controller
-     * @return \Docnet\JAPI\Router
+     * @return \Docnet\JAPI\SolidRouter
      */
     public function addRoute($str_path, $str_controller)
     {
@@ -162,7 +162,7 @@ class SolidRouter
      * Set the static routes
      *
      * @param array $arr_routes
-     * @return \Docnet\JAPI\Router
+     * @return \Docnet\JAPI\SolidRouter
      */
     public function setRoutes(Array $arr_routes)
     {

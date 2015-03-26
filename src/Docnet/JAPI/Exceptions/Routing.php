@@ -17,7 +17,7 @@
 namespace Docnet\JAPI\Exceptions;
 
 /**
- * Routing Exceptions
+ * Routing Exception
  *
  * @author Tom Walder
  */
