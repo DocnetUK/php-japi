@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 namespace Docnet\JAPI;
+
 /**
  * Base Controller
  *
