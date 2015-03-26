@@ -123,7 +123,6 @@ class JAPI implements LoggerAwareInterface
         }
         $this->sendResponse($arr_response);
         $this->getLogger()->error("[JAPI exiting with {$int_code}] " . $str_log_message);
-        exit();
     }
 
     /**
