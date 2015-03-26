@@ -38,7 +38,7 @@ class SolidRouter
      *
      * @var array|mixed
      */
-    protected $arr_url = array();
+    protected $arr_url = [];
 
     /**
      * Controller class as determined by parseController()
@@ -52,7 +52,7 @@ class SolidRouter
      *
      * @var array
      */
-    private $arr_static_routes = array();
+    private $arr_static_routes = [];
 
     /**
      * @var string

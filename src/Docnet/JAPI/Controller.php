@@ -30,7 +30,7 @@ abstract class Controller
     /**
      * Response data
      *
-     * @var null
+     * @var null|object|array
      */
     protected $obj_response = NULL;
 
@@ -80,7 +80,7 @@ abstract class Controller
         if (function_exists('getallheaders')) {
             return getallheaders();
         }
-        $arr_headers = array();
+        $arr_headers = [];
         foreach ($_SERVER as $str_key => $str_value) {
             if (strpos($str_key, 'HTTP_') === 0) {
                 $arr_headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($str_key, 5)))))] = $str_value;
@@ -178,6 +178,6 @@ abstract class Controller
      *
      * @return mixed
      */
-    abstract function dispatch();
+    abstract public function dispatch();
 
 }
