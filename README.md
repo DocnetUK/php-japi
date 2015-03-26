@@ -40,7 +40,9 @@ This allows for
 
 You can still share common code via extension/composition - whatever takes your fancy!
 
-### Routing ###
+JAPI will call the `dispatch()` method on your controller.
+
+### SOLID Routing ###
 
 The bundled router will accept any depth of controller namespace, like this
 
@@ -48,7 +50,7 @@ The bundled router will accept any depth of controller namespace, like this
 - `/one/two` => `One\Two`
 - `/one/two/three` => `One\Two\Three`
 
-When you construct the Router, you can give it a "root" namspace, like this:
+When you construct the Router, you can give it a "root" namespace, like this:
 
 ```php
 $router = new \Docnet\JAPI\SolidRouter('\\Docnet\\App\\Controller\\');
@@ -58,30 +60,30 @@ Which results in this routing:
 
 - `/one/two` => `\Docnet\App\Controller\One\Two`
 
-## Hello, World! ##
+### Static Routes ###
 
-Let's assume we want our API to respond on the following URL: `api.example.com/hello/world`
+If you have some static routes you want to set up, that's no problem - they also bypass the routing regex code
+and so make calls very slightly faster.
 
-So, here's a JAPI controller we'll need:
+Add a single custom route
 
 ```php
-namespace Hello;
-class World extends \Docnet\JAPI\Controller
-{
-    public function dispatch() // <-- method declared Abstract in the JAPI Controller
-    {
-        $this->setResponse([
-            'message' =>'Hello, World!'
-        ]);
-    }
-}
+$router = new \Docnet\JAPI\SolidRouter();
+$router->addRoute('/hello', '\\Some\\Controller');
 ```
 
-See the examples folder for a working demo.
+Or set a load of them
 
-## Getting Started ##
+```php
+<?php
+$router = new \Docnet\JAPI\SolidRouter();
+$router->setRoutes([
+    '/hello' => '\\Some\\Controller',
+    '/world' => '\\Other\\Controller'
+]);
+```
 
-### Install with Composer ###
+## Installation ##
 
 Here's the require line for Composer users (during 2-series development)...
 
@@ -89,14 +91,14 @@ Here's the require line for Composer users (during 2-series development)...
 
 ...or just download and use the src folder.
 
-### Entry Point (index.php) ###
+## Bootstrapping ##
 
 Assuming...
 
 - You've got Apache/whatever set up to route all requests to this file
 - An auto-loader is present (like the Composer example here) or you've included all files necessary
 
-...then something like this is all the code you need
+...then something like this is all the code you need in your `index.php`
 
 ```php
 (new \Docnet\JAPI())->bootstrap(function(){
@@ -112,38 +114,8 @@ Assuming...
 
 See the examples folder for a working demo (api.php).
 
-### Static Routes ###
-
-If you have some static routes you want to set up, that's no problem - they also bypass the routing regex code
-and so make calls very slightly faster.
-
-Add a single custom route
-
-```php
-<?php
-// @todo update for v2
-```
-
-Or set a load of them
-
-```php
-<?php
-// @todo update for v2
-```
-
-### Custom Router ###
-
-If you want to write your own Router class? no problem!
-
-Perhaps you want to route based on HTTP request methods (GET/POST/PUT/DELETE).
-
-There's a Router interface and you can follow and you can change the router through the JAPI object like this:
-
-```php
-<?php
-// @todo update for v2
-```
-
 ## Coding Standards ##
 
 Desired adherence to [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md).
+
+Uses [PSR-3](https://github.com/php-fig/log) logging
