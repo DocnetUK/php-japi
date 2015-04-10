@@ -106,4 +106,26 @@ class SolidRouterTest extends PHPUnit_Framework_TestCase
         $obj_router->route('/missing-url');
     }
 
+    /**
+     * Test for failed URL parsing
+     *
+     * @expectedException \Docnet\JAPI\Exceptions\Routing
+     */
+    public function testMalformedUrl()
+    {
+        $obj_router = new \Docnet\JAPI\SolidRouter();
+        $obj_router->route('http://:80');
+    }
+
+    /**
+     * Test for failed URL regex match
+     *
+     * @expectedException \Docnet\JAPI\Exceptions\Routing
+     */
+    public function testNonUrlString()
+    {
+        $obj_router = new \Docnet\JAPI\SolidRouter();
+        $obj_router->route('-');
+    }
+
 }
