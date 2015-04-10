@@ -122,4 +122,16 @@ class JAPITest extends PHPUnit_Framework_TestCase
         $obj_japi->bootstrap(new Exceptional());
     }
 
+    /**
+     * Ensure we do not fall over when no logger has been supplied
+     */
+    public function testNoLogger()
+    {
+        // Mock JAPI
+        $obj_japi = $this->getMockBuilder('\\Docnet\\JAPI')->setMethods(['sendResponse'])->getMock();
+
+        // Dispatch
+        $obj_japi->bootstrap(new Exceptional());
+    }
+
 }
