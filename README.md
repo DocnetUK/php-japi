@@ -1,5 +1,5 @@
 [![Build Status](https://api.travis-ci.org/DocnetUK/php-japi.svg?branch=2.0)](https://travis-ci.org/DocnetUK/php-japi)
-[![Coverage](https://img.shields.io/coveralls/DocnetUK/php-japi/2.0.svg)](https://coveralls.io/r/DocnetUK/php-japi)
+[![Coverage Status](https://coveralls.io/repos/DocnetUK/php-japi/badge.svg?branch=2.0)](https://coveralls.io/r/DocnetUK/php-japi)
 
 # PHP JSON API Library #
 

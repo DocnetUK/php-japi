@@ -11,3 +11,5 @@ Thumbs.db
 # IDE #
 #######
 .idea/
+
+build/
