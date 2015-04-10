@@ -1,6 +1,7 @@
 <?php
 
 require_once('Controllers/Example.php');
+require_once('Controllers/Headers.php');
 require_once('Controllers/Exceptional.php');
 
 class ControllerTest extends PHPUnit_Framework_TestCase
@@ -50,6 +51,14 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $obj_controller->dispatch();
         $obj_response = $obj_controller->getResponse();
         $this->assertEquals($obj_response['input4'], 'value4-get');
+    }
+
+    public function testCliHeaders()
+    {
+        $_SERVER['HTTP_SOME_HEADER'] = TRUE;
+        $obj_controller = new Headers();
+        $obj_controller->dispatch();
+        $this->assertEquals($obj_controller->getResponse(), ['Some-Header' => TRUE]);
     }
 
 }
