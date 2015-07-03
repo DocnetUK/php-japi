@@ -79,6 +79,7 @@ class SolidRouter
      *
      * @param string $str_url
      * @throws Routing
+     * @return $this
      */
     public function route($str_url = NULL)
     {
@@ -93,6 +94,7 @@ class SolidRouter
             }
             $this->setup(implode("\t", $arr_matches['controller']));
         }
+        return $this;
     }
 
     /**
