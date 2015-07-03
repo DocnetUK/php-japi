@@ -108,6 +108,9 @@ class JAPI implements LoggerAwareInterface
         if(TRUE) { // @todo Environment or LIVE check
             $arr_response['detail'] = $str_log_message;
         }
+        if($int_code < 400 || $int_code > 505) {
+            $int_code = 500;
+        }
         $this->sendResponse($arr_response, $int_code);
         $this->getLogger()->error("[JAPI] [{$int_code}] Error: {$str_log_message}");
     }
@@ -120,6 +123,7 @@ class JAPI implements LoggerAwareInterface
      */
     protected function sendResponse($response, $http_code = 200)
     {
+        $http_code = min(max($http_code, 100), 505);
         http_response_code($http_code);
         header('Content-type: application/json');
         echo json_encode($response);
