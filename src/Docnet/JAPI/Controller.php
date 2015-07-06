@@ -33,7 +33,19 @@ abstract class Controller
      *
      * @var null|object|array
      */
-    protected $obj_response = NULL;
+    protected $obj_response = null;
+
+    /**
+     * Request body
+     * @var string
+     */
+    protected $str_request_body = null;
+
+    /**
+     * Request body decoded as json
+     * @var string
+     */
+    protected $str_request_body_json = null;
 
     /**
      * Default, empty pre dispatch
@@ -97,7 +109,11 @@ abstract class Controller
      */
     protected function getBody()
     {
-        return file_get_contents('php://input');
+        if ($this->str_request_body === null) {
+            // We store this as prior to php5.6 this can only be read once
+            $this->str_request_body = file_get_contents('php://input');
+        }
+        return $this->str_request_body;
     }
 
     /**
@@ -107,25 +123,35 @@ abstract class Controller
      */
     protected function getJson()
     {
-        return json_decode($this->getBody());
+        if ($this->str_request_body_json === null) {
+            $this->str_request_body_json = json_decode($this->getBody());
+        }
+        return $this->str_request_body_json;
     }
 
     /**
-     * Get a request parameter. Check GET then POST data.
+     * Get a request parameter. Check GET then POST data, then optionally any json body data.
      *
      * @param string $str_key
      * @param mixed $str_default
+     * @param bool $check_json_body
      * @return mixed
      */
-    protected function getParam($str_key, $str_default = NULL)
+    protected function getParam($str_key, $str_default = null, $check_json_body = false)
     {
-        $str_query = $this->getQuery($str_key, $str_default);
-        if (NULL !== $str_query) {
+        $str_query = $this->getQuery($str_key);
+        if (null !== $str_query) {
             return $str_query;
         }
-        $str_post = $this->getPost($str_key, $str_default);
+        $str_post = $this->getPost($str_key);
         if (NULL !== $str_post) {
             return $str_post;
+        }
+        // Optionally check Json in Body
+        if ($check_json_body && isset($this->getJson()->$str_key)) {
+            if (null !== $this->getJson()->$str_key) {
+                return $this->getJson()->$str_key;
+            }
         }
         return $str_default;
     }

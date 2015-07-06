@@ -3,6 +3,8 @@
 require_once('Controllers/Example.php');
 require_once('Controllers/Headers.php');
 require_once('Controllers/Exceptional.php');
+require_once('Controllers/JsonParams.php');
+require_once('Controllers/ProtectedFunctions.php');
 
 class ControllerTest extends PHPUnit_Framework_TestCase
 {
@@ -61,4 +63,20 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($obj_controller->getResponse(), ['Some-Header' => TRUE]);
     }
 
+    public function testJsonBodyParam()
+    {
+        $str_json = '{"json_param": "param_found"}';
+        $obj_controller = new \JsonParams();
+        $obj_controller->setBody($str_json);
+        $obj_controller->dispatch();
+        $obj_response = $obj_controller->getResponse();
+        $this->assertEquals('param_found', $obj_response['json_param']);
+        $this->assertEquals('default_value', $obj_response['missing_param']);
+    }
+
+    public function testIsPost() {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $obj_controller = new ProtectedFunctions();
+        $this->assertTrue($obj_controller->getIsPost());
+    }
 }
