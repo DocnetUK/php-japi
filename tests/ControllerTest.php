@@ -4,6 +4,7 @@ require_once('Controllers/Example.php');
 require_once('Controllers/Headers.php');
 require_once('Controllers/Exceptional.php');
 require_once('Controllers/JsonParams.php');
+require_once('Controllers/ProtectedFunctions.php');
 
 class ControllerTest extends PHPUnit_Framework_TestCase
 {
@@ -73,4 +74,9 @@ class ControllerTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('default_value', $obj_response['missing_param']);
     }
 
+    public function testIsPost() {
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+        $obj_controller = new ProtectedFunctions();
+        $this->assertTrue($obj_controller->getIsPost());
+    }
 }

@@ -109,7 +109,7 @@ abstract class Controller
      */
     protected function getBody()
     {
-        if ($this->str_request_body == null) {
+        if ($this->str_request_body === null) {
             // We store this as prior to php5.6 this can only be read once
             $this->str_request_body = file_get_contents('php://input');
         }
@@ -124,7 +124,7 @@ abstract class Controller
     protected function getJson()
     {
         if ($this->str_request_body_json === null) {
-            $this->str_request_body_json = json_decode($this->str_request_body);
+            $this->str_request_body_json = json_decode($this->getBody());
         }
         return $this->str_request_body_json;
     }
