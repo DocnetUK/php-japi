@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2014 Docnet
+ * Copyright 2015 Docnet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 namespace Docnet\JAPI;
+
 /**
  * Base Controller
  *
@@ -30,9 +31,21 @@ abstract class Controller
     /**
      * Response data
      *
-     * @var null
+     * @var null|object|array
      */
-    protected $obj_response = NULL;
+    protected $obj_response = null;
+
+    /**
+     * Request body
+     * @var string
+     */
+    protected $str_request_body = null;
+
+    /**
+     * Request body decoded as json
+     * @var string
+     */
+    protected $str_request_body_json = null;
 
     /**
      * Default, empty pre dispatch
@@ -77,10 +90,10 @@ abstract class Controller
      */
     protected function getHeaders()
     {
-        if (PHP_VERSION_ID >= 50400 || function_exists('getallheaders')) {
+        if (function_exists('getallheaders')) {
             return getallheaders();
         }
-        $arr_headers = array();
+        $arr_headers = [];
         foreach ($_SERVER as $str_key => $str_value) {
             if (strpos($str_key, 'HTTP_') === 0) {
                 $arr_headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($str_key, 5)))))] = $str_value;
@@ -96,7 +109,11 @@ abstract class Controller
      */
     protected function getBody()
     {
-        return file_get_contents('php://input');
+        if ($this->str_request_body === null) {
+            // We store this as prior to php5.6 this can only be read once
+            $this->str_request_body = file_get_contents('php://input');
+        }
+        return $this->str_request_body;
     }
 
     /**
@@ -106,25 +123,35 @@ abstract class Controller
      */
     protected function getJson()
     {
-        return json_decode($this->getBody());
+        if ($this->str_request_body_json === null) {
+            $this->str_request_body_json = json_decode($this->getBody());
+        }
+        return $this->str_request_body_json;
     }
 
     /**
-     * Get a request parameter. Check GET then POST data.
+     * Get a request parameter. Check GET then POST data, then optionally any json body data.
      *
-     * @param $str_key
-     * @param null $str_default
-     * @return null
+     * @param string $str_key
+     * @param mixed $str_default
+     * @param bool $check_json_body
+     * @return mixed
      */
-    protected function getParam($str_key, $str_default = NULL)
+    protected function getParam($str_key, $str_default = null, $check_json_body = false)
     {
-        $str_query = $this->getQuery($str_key, $str_default);
-        if (NULL !== $str_query) {
+        $str_query = $this->getQuery($str_key);
+        if (null !== $str_query) {
             return $str_query;
         }
-        $str_post = $this->getPost($str_key, $str_default);
+        $str_post = $this->getPost($str_key);
         if (NULL !== $str_post) {
             return $str_post;
+        }
+        // Optionally check Json in Body
+        if ($check_json_body && isset($this->getJson()->$str_key)) {
+            if (null !== $this->getJson()->$str_key) {
+                return $this->getJson()->$str_key;
+            }
         }
         return $str_default;
     }
@@ -132,9 +159,9 @@ abstract class Controller
     /**
      * Get a Query/GET input parameter
      *
-     * @param $str_key
-     * @param null $str_default
-     * @return null
+     * @param string $str_key
+     * @param mixed $str_default
+     * @return mixed
      */
     protected function getQuery($str_key, $str_default = NULL)
     {
@@ -144,25 +171,13 @@ abstract class Controller
     /**
      * Get a POST parameter
      *
-     * @param $str_key
-     * @param null $str_default
-     * @return null
+     * @param string $str_key
+     * @param mixed $str_default
+     * @return mixed
      */
     protected function getPost($str_key, $str_default = NULL)
     {
         return (isset($_POST[$str_key]) ? $_POST[$str_key] : $str_default);
-    }
-
-    /**
-     * Issue the JSON response
-     *
-     * @todo How to deal with NULL?
-     */
-    public function jsonResponse()
-    {
-        header('Content-type: application/json');
-        echo json_encode($this->obj_response);
-        //exit();
     }
 
     /**
@@ -174,5 +189,22 @@ abstract class Controller
     {
         $this->obj_response = $obj_response;
     }
+
+    /**
+     * Get the response data
+     *
+     * @return object|array
+     */
+    public function getResponse()
+    {
+        return $this->obj_response;
+    }
+
+    /**
+     * Main dispatch method
+     *
+     * @return mixed
+     */
+    abstract public function dispatch();
 
 }

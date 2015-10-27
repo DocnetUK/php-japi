@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2014 Docnet
+ * Copyright 2015 Docnet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Docnet\JAPI\Interfaces;
+namespace Docnet;
+
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
- * JAPI Router Interface
- *
- * @author Tom Walder <tom@docnet.nu>
+ * HasLogger Trait
  */
-interface Router
+trait HasLogger
 {
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger = NULL;
 
     /**
-     * Route the request.
+     * Sets a logger.
      *
-     * This means "turn the URL into a Controller (class) and Action (method)
-     * for execution.
-     *
-     * @throws Exceptions\Routing
+     * @param LoggerInterface $logger
      */
-    public function route($str_url = NULL);
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
 
     /**
-     * Dispatch the request
+     * Gets a logger.
      *
-     * @throws \Exception
+     * @return LoggerInterface
      */
-    public function dispatch();
-
+    protected function getLogger()
+    {
+        if(NULL === $this->logger) {
+            $this->logger = new NullLogger();
+        }
+        return $this->logger;
+    }
 }

@@ -1,88 +1,65 @@
+[![Build Status](https://api.travis-ci.org/DocnetUK/php-japi.svg?branch=2.0)](https://travis-ci.org/DocnetUK/php-japi)
+[![Coverage Status](https://coveralls.io/repos/DocnetUK/php-japi/badge.svg?branch=2.0)](https://coveralls.io/r/DocnetUK/php-japi)
+
 # PHP JSON API Library #
 
-Simple library for building HTTP JSON APIs in PHP.
+Version 2 of our library for building HTTP JSON APIs in PHP.
 
-Sure, I know, there are loads of MVC frameworks out there - and a few very popular ones - that can do this for
-you and a lot more besides.
-
-BUT, `php-japi` is designed to ONLY do HTTP JSON APIs, so it's small and fast.
+Some major changes in version 2
+- Adopt better code practices, allowing for Dependency Injection
+- Adopt our new "Single Responsibility Controller" approach
+- Decouple Router from JAPI container
+- Use PSR logging
+- Adopt PHP 5.4 minimum version
 
 As we expand our Service Orientated Architecture (SOA) at Docnet, we're using this more and more - so I hope it's useful
 to someone else ;)
 
 Intended to use HTTP status codes wherever possible for passing success/failure etc. back to the client.
 
-Data/payload is your responsibility!
+## Single Responsibility Controller ##
 
-## Hello, World! ##
+We've adopted a new (for us) take on routing and controller complexity in 2.0. As such, where previously, you might have 
+had multiple actions (methods) on the same class like this:
 
-Let's assume we want our API to respond on the following URL: `api.example.com/hello/world`
+- `BasketController::fetchDetailAction()`
+- `BasketController::addAction()`
+- `BasketController::removeAction()`
+- `BasketController::emptyAction()`
 
-So, here's the JAPI controller we'll need:
+Now this would be 4 name-spaced classes, like this
 
-```php
-<?php
-class Hello extends \Docnet\JAPI\Controller
-{
-    public function worldAction()
-    {
-        $this->setResponse(array(
-            'message' =>'Hello, World!'
-        ));
-    }
-}
-```
+- `Basket\FetchDetail`
+- `Basket\Add`
+- `Basket\Remove`
+- `Basket\Empty`
 
-See the examples folder for a working demo.
+This allows for 
+- Greater code modularity
+- Smaller classes
+- Much easier Dependency Injection via `__construct()` as each "action" is it's own class.
 
-## Getting Started ##
+You can still share common code via extension/composition - whatever takes your fancy!
 
-### Install with Composer ###
+JAPI will call the `dispatch()` method on your controller.
 
-Here's the require line for Composer users...
+### SOLID Routing ###
 
-`"docnet/php-japi": "v1.1.1"`
+The bundled router will accept any depth of controller namespace, like this
 
-...or just download and use the src folder.
+- `/one` => `One`
+- `/one/two` => `One\Two`
+- `/one/two/three` => `One\Two\Three`
 
-### Entry Point (index.php) ###
-
-Assuming:
-
-- You've got Apache/whatever set up to route all requests to this file
-- An auto-loader is present (like the Composer example here) or you've included all files necessary
-- Your controllers are not name spaced and you're happy with our default configuration
-
-then something like this is all the code you need
+When you construct the Router, you can give it a "root" namespace, like this:
 
 ```php
-<?php
-require_once('vendor/autoload.php');
-$api = new \Docnet\JAPI();
-$api->run();
+$router = new \Docnet\JAPI\SolidRouter('\\Docnet\\App\\Controller\\');
 ```
 
-See the examples folder for a working demo (api.php).
+Which results in this routing:
 
-## Routing ##
-
-The standard routing is quite strict, and (at the time ot writing) expects a controller + action pair for all requests.
-
-e.g. `api.example.com/hello/world`
-
-URLs without a 2-part controller + action pair will result in a 404, such as
-
-- `api.example.com`
-- `api.example.com/`
-- `api.example.com/controller`
-
-We do conversion to `StudlyCaps` classes and `camelCase` methods, splitting on hyphens and suffix 'Action' for the
-method. e.g.
-
-- `api.example.com/hello/world` becomes `Hello::worldAction()`
-- `api.example.com/hello-world/long-name` becomes `HelloWorld::longNameAction()`
-
-I seem to recall this is similar to ZF1.
+- `/one/two` => `\Docnet\App\Controller\One\Two`
 
 ### Static Routes ###
 
@@ -92,39 +69,51 @@ and so make calls very slightly faster.
 Add a single custom route
 
 ```php
-<?php
-$api = new \Docnet\JAPI();
-$api->getRouter()->addRoute('/goodbye', 'Hello', 'worldAction');
-$api->run();
+$router = new \Docnet\JAPI\SolidRouter();
+$router->addRoute('/hello', '\\Some\\Controller');
 ```
 
 Or set a load of them
 
 ```php
-<?php
-$api = new \Docnet\JAPI();
-$api->getRouter()->setRoutes(array(
-    '/goodbye'  => array('Hello', 'worldAction'),
-    '/testing'  => array('SomeController', 'testAction'),
-));
-$api->run();
+$router = new \Docnet\JAPI\SolidRouter();
+$router->setRoutes([
+    '/hello' => '\\Some\\Controller',
+    '/world' => '\\Other\\Controller'
+]);
 ```
 
-### Custom Router ###
+## Installation ##
 
-If you want to write your own Router class? no problem!
+Here's the require line for Composer users (during 2-series development)...
 
-Perhaps you want to route based on HTTP request methods (GET/POST/PUT/DELETE).
+`"docnet/php-japi": "2.0.*@dev"`
 
-There's a Router interface and you can follow and you can change the router through the JAPI object like this:
+...or just download and use the src folder.
+
+## Bootstrapping ##
+
+Assuming...
+
+- You've got Apache/whatever set up to route all requests to this file
+- An auto-loader is present (like the Composer example here) or you've included all files necessary
+
+...then something like this is all the code you need in your `index.php`
 
 ```php
-<?php
-$api = new \Docnet\JAPI();
-$api->setRouter(new MyAwesomeRouter());
-$api->run();
+(new \Docnet\JAPI())->bootstrap(function(){
+
+    $obj_router = new \Docnet\JAPI\SolidRouter();
+    $obj_router->route();
+
+    $str_controller = $obj_router->getController();
+    return new $str_controller();
+
+});
 ```
+
+See the examples folder for a working demo (api.php).
 
 ## Coding Standards ##
 
-Desired adherence to [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md).
+Desired adherence to [PSR-2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md). Uses [PSR-3](https://github.com/php-fig/log) logging.

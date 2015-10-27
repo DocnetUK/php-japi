@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2014 Docnet
+ * Copyright 2015 Docnet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 namespace Docnet\JAPI\Exceptions;
 
 /**
- * Routing Exceptions
+ * Routing Exception
  *
  * @author Tom Walder
  */

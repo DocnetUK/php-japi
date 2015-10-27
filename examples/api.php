@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2014 Docnet
+ * Copyright 2015 Docnet
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,22 +23,16 @@
 
 // Includes or Auto-loader
 define('BASE_PATH', dirname(dirname(__FILE__)));
-require_once(BASE_PATH . '/src/Docnet/JAPI.php');
-require_once(BASE_PATH . '/src/Docnet/JAPI/Config.php');
-require_once(BASE_PATH . '/src/Docnet/JAPI/Interfaces/Router.php');
-require_once(BASE_PATH . '/src/Docnet/JAPI/Router.php');
-require_once(BASE_PATH . '/src/Docnet/JAPI/Controller.php');
-require_once(BASE_PATH . '/src/Docnet/JAPI/Exceptions/Routing.php');
-require_once(BASE_PATH . '/src/Docnet/JAPI/Exceptions/Auth.php');
-
-// Example controller and fake request for this example
+require_once(BASE_PATH . '/vendor/autoload.php');
 require_once('Hello.php');
-if(!isset($_SERVER['REQUEST_URI'])) {
-    $_SERVER['REQUEST_URI'] = '/hello/world';
-    // $_SERVER['REQUEST_URI'] = '/goodbye';
-}
 
-// Run
-$api = new \Docnet\JAPI();
-$api->getRouter()->addRoute('/goodbye', 'Hello', 'worldAction');
-$api->run();
+// Demo
+(new \Docnet\JAPI())->bootstrap(function(){
+
+    $obj_router = new \Docnet\JAPI\SolidRouter();
+    $obj_router->route('/hello');
+
+    $str_controller = $obj_router->getController();
+    return new $str_controller();
+
+});
