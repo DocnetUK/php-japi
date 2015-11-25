@@ -104,7 +104,7 @@ class JAPI implements LoggerAwareInterface
             'code' => $int_code,
             'msg' => ($obj_error instanceof \ErrorException ? 'Internal Error' : 'Exception')
         ];
-        $str_log_message = get_class($obj_error) . ': ' . $obj_error->getMessage();
+        $str_log_message = $obj_error->getMessage();
         if(TRUE) { // @todo Environment or LIVE check
             $arr_response['detail'] = $str_log_message;
         }
