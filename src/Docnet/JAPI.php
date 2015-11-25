@@ -42,7 +42,7 @@ class JAPI implements LoggerAwareInterface
     public function __construct()
     {
         register_shutdown_function([$this, 'timeToDie']);
-        set_error_handler([$this, 'errorHandler']);
+        set_error_handler([$this, 'errorHandler'], E_ALL);
     }
 
     /**
