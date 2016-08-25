@@ -36,6 +36,13 @@ class JAPI implements LoggerAwareInterface
     use HasLogger;
 
     /**
+     * Should we expose detailed error information in responses?
+     *
+     * @var bool
+     */
+    private $bol_expose_errors = false;
+
+    /**
      * Hook up the shutdown function so we always send nice JSON error responses
      */
     public function __construct()
@@ -93,8 +100,6 @@ class JAPI implements LoggerAwareInterface
     /**
      * Whatever went wrong, let 'em have it in JSON over HTTP
      *
-     * @todo Environment or LIVE check for extended error
-     *
      * @param \Exception $obj_error
      * @param int $int_code
      */
@@ -105,7 +110,7 @@ class JAPI implements LoggerAwareInterface
             'msg' => ($obj_error instanceof \ErrorException ? 'Internal Error' : 'Exception')
         ];
         $str_log_message = get_class($obj_error) . ': ' . $obj_error->getMessage();
-        if(TRUE) { // @todo Environment or LIVE check
+        if($this->bol_expose_errors) {
             $arr_response['detail'] = $str_log_message;
         }
         if($int_code < 400 || $int_code > 505) {
@@ -127,6 +132,16 @@ class JAPI implements LoggerAwareInterface
         http_response_code($http_code);
         header('Content-type: application/json');
         echo json_encode($response);
+    }
+
+    /**
+     * Tell JAPI to expose error detail, or not!
+     *
+     * @param bool $bol_expose
+     */
+    public function exposeErrorDetail($bol_expose = true)
+    {
+        $this->bol_expose_errors = $bol_expose;
     }
 
 }
