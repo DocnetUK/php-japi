@@ -18,6 +18,7 @@ namespace Docnet;
 
 use \Docnet\JAPI\Exceptions\Routing as RoutingException;
 use \Docnet\JAPI\Exceptions\Auth as AuthException;
+use \Docnet\JAPI\Exceptions\Maintenance as MaintenanceException;
 
 /**
  * Front controller for our JSON APIs
@@ -74,10 +75,16 @@ class JAPI
             $obj_router = $this->getRouter();
             $obj_router->route();
             $obj_router->dispatch();
+
+        } catch (MaintenanceException $obj_ex) {
+            $this->jsonError($obj_ex, 503);
+
         } catch (RoutingException $obj_ex) {
             $this->jsonError($obj_ex, 404);
+
         } catch (AuthException $obj_ex) {
             $this->jsonError($obj_ex, 401);
+
         } catch (\Exception $obj_ex) {
             $this->jsonError($obj_ex);
         }
@@ -113,6 +120,9 @@ class JAPI
                 break;
             case 404:
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", TRUE, 404);
+                break;
+            case 503:
+                header($_SERVER["SERVER_PROTOCOL"] . " 503 Service Unavailable", TRUE, 503);
                 break;
             case 500:
             default:
