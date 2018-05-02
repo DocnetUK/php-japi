@@ -77,7 +77,7 @@ class JAPI
             $obj_router->dispatch();
 
         } catch (MaintenanceException $obj_ex) {
-            $this->jsonError($obj_ex, 503);
+            $this->jsonError('Service Temporarily Unavailable', 503);
 
         } catch (RoutingException $obj_ex) {
             $this->jsonError($obj_ex, 404);
