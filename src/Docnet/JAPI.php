@@ -19,6 +19,7 @@ namespace Docnet;
 use \Docnet\JAPI\Exceptions\Routing as RoutingException;
 use \Docnet\JAPI\Exceptions\Auth as AuthException;
 use \Docnet\JAPI\Exceptions\Maintenance as MaintenanceException;
+use Docnet\JAPI\Exceptions\AccessDenied as AccessDeniedException;
 
 /**
  * Front controller for our JSON APIs
@@ -85,6 +86,9 @@ class JAPI
         } catch (AuthException $obj_ex) {
             $this->jsonError($obj_ex, 401);
 
+        } catch (AccessDeniedException $obj_ex) {
+            $this->jsonError($obj_ex, 403);
+
         } catch (\Exception $obj_ex) {
             $this->jsonError($obj_ex);
         }
@@ -117,6 +121,9 @@ class JAPI
         switch ($int_code) {
             case 401:
                 header($_SERVER["SERVER_PROTOCOL"] . " 401 Unauthorized", TRUE, 401);
+                break;
+            case 403:
+                header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden", TRUE, 401);
                 break;
             case 404:
                 header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", TRUE, 404);
