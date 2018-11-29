@@ -3,6 +3,7 @@
 require_once('Controllers/Example.php');
 require_once('Controllers/Exceptional.php');
 require_once('Controllers/Whoops.php');
+require_once('Controllers/AccessDenied.php');
 
 class JAPITest extends PHPUnit_Framework_TestCase
 {
@@ -132,6 +133,23 @@ class JAPITest extends PHPUnit_Framework_TestCase
 
         // Dispatch
         $obj_japi->bootstrap(new Exceptional());
+    }
+
+    /**
+     * Test an AccessDenied Exception codes are correctly passed to jsonError from the bootstrap() method
+     */
+    public function testBootstrapAccessDeniedErrorCycle()
+    {
+        // Mock JAPI
+        $obj_japi = $this->getMockBuilder('\\Docnet\\JAPI')->setMethods(['sendResponse', 'jsonError'])->getMock();
+        $obj_japi->expects($this->never())->method('sendResponse');
+        $obj_japi->expects($this->once())->method('jsonError')->with(
+            $this->equalTo(new \Docnet\JAPI\Exceptions\AccessDenied('Error Message', 403)),
+            $this->equalTo(403)
+        );
+
+        // Dispatch
+        $obj_japi->bootstrap(new AccessDenied());
     }
 
 }
