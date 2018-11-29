@@ -17,7 +17,7 @@
 namespace Docnet\JAPI\Exceptions;
 
 /**
- * Auth Exception
+ * AccessDenied Exception
  *
  * @author Kamba Abudu <kamba@venditan.com>
  */
