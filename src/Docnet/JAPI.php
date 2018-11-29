@@ -67,7 +67,8 @@ class JAPI implements LoggerAwareInterface
         } catch (RoutingException $obj_ex) {
             $this->jsonError($obj_ex, 404);
         } catch (AuthException $obj_ex) {
-            $this->jsonError($obj_ex, 401);
+            $int_code = null === $obj_ex->getCode() ? 401 : $obj_ex->getCode();
+            $this->jsonError($obj_ex, $int_code);
         } catch (\Exception $obj_ex) {
             $this->jsonError($obj_ex, $obj_ex->getCode());
         }
