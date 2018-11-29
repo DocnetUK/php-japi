@@ -19,6 +19,7 @@ namespace Docnet;
 use Docnet\JAPI\Controller;
 use Docnet\JAPI\Exceptions\Routing as RoutingException;
 use Docnet\JAPI\Exceptions\Auth as AuthException;
+use Docnet\JAPI\Exceptions\AccessDenied as AccessDeniedException;
 use Psr\Log\LoggerAwareInterface;
 
 /**
@@ -68,6 +69,8 @@ class JAPI implements LoggerAwareInterface
             $this->jsonError($obj_ex, 404);
         } catch (AuthException $obj_ex) {
             $this->jsonError($obj_ex, 401);
+        } catch (AccessDeniedException $obj_ex) {
+            $this->jsonError($obj_ex, 403);
         } catch (\Exception $obj_ex) {
             $this->jsonError($obj_ex, $obj_ex->getCode());
         }
