@@ -14,11 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace Docnet;
 
 use \Docnet\JAPI\Exceptions\Routing as RoutingException;
 use \Docnet\JAPI\Exceptions\Auth as AuthException;
 use \Docnet\JAPI\Exceptions\Maintenance as MaintenanceException;
+use \Docnet\JAPI\Exceptions\AccessDenied as AccessDeniedException;
 
 /**
  * Front controller for our JSON APIs
@@ -35,35 +37,35 @@ class JAPI
     /**
      * @var JAPI\Config
      */
-    private static $obj_config = NULL;
+    private static $obj_config = null;
 
     /**
      * @var JAPI\Router
      */
-    private static $obj_router = NULL;
+    private static $obj_router = null;
 
     /**
      * @var JAPI\Logger
      */
-    private $obj_logger = NULL;
+    private $obj_logger = null;
 
     /**
      * @var null|float
      */
-    private static $flt_startup = NULL;
+    private static $flt_startup = null;
 
     /**
      * When creating a new JAPI, hook up the shutdown function and set Config
      *
      * @param null|JAPI\Config $obj_config
      */
-    public function __construct($obj_config = NULL)
+    public function __construct($obj_config = null)
     {
         register_shutdown_function(array($this, 'timeToDie'));
-        if(NULL !== $obj_config) {
+        if (null !== $obj_config) {
             self::$obj_config = $obj_config;
         }
-        self::$flt_startup = (isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : microtime(TRUE));
+        self::$flt_startup = (isset($_SERVER['REQUEST_TIME_FLOAT']) ? $_SERVER['REQUEST_TIME_FLOAT'] : microtime(true));
     }
 
     /**
@@ -84,6 +86,9 @@ class JAPI
 
         } catch (AuthException $obj_ex) {
             $this->jsonError($obj_ex, 401);
+
+        } catch (AccessDeniedException $obj_ex) {
+            $this->jsonError($obj_ex, 403);
 
         } catch (\Exception $obj_ex) {
             $this->jsonError($obj_ex);
@@ -107,26 +112,30 @@ class JAPI
      * Whatever went wrong, let 'em have it in JSON
      *
      * One day...
+     *
      * @see http://www.php.net/manual/en/function.http-response-code.php
      *
      * @param string|\Exception $mix_message
      * @param int $int_code
      */
-    protected function jsonError($mix_message = NULL, $int_code = 500)
+    protected function jsonError($mix_message = null, $int_code = 500)
     {
         switch ($int_code) {
             case 401:
-                header($_SERVER["SERVER_PROTOCOL"] . " 401 Unauthorized", TRUE, 401);
+                header($_SERVER["SERVER_PROTOCOL"] . " 401 Unauthorized", true, 401);
+                break;
+            case 403:
+                header($_SERVER["SERVER_PROTOCOL"] . " 403 Forbidden", true, 401);
                 break;
             case 404:
-                header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", TRUE, 404);
+                header($_SERVER["SERVER_PROTOCOL"] . " 404 Not Found", true, 404);
                 break;
             case 503:
-                header($_SERVER["SERVER_PROTOCOL"] . " 503 Service Unavailable", TRUE, 503);
+                header($_SERVER["SERVER_PROTOCOL"] . " 503 Service Unavailable", true, 503);
                 break;
             case 500:
             default:
-                header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error", TRUE, 500);
+                header($_SERVER["SERVER_PROTOCOL"] . " 500 Internal Server Error", true, 500);
         }
         if ($mix_message instanceof \Exception) {
             $str_log = get_class($mix_message) . ': ' . $mix_message->getMessage();
@@ -137,10 +146,12 @@ class JAPI
             $str_log = $str_message = 'Unknown error';
         }
         header('Content-type: application/json');
-        echo json_encode(array(
-            'response' => (int)$int_code,
-            'msg' => $str_message
-        ));
+        echo json_encode(
+            array(
+                'response' => (int)$int_code,
+                'msg' => $str_message,
+            )
+        );
         $this->log(LOG_ERR, "[JAPI exiting with {$int_code}] " . $str_log);
         exit();
     }
@@ -152,7 +163,7 @@ class JAPI
      */
     public static function getRouter()
     {
-        if (NULL === self::$obj_router) {
+        if (null === self::$obj_router) {
             self::$obj_router = new JAPI\Router();
         }
         return self::$obj_router;
@@ -175,7 +186,7 @@ class JAPI
      */
     public static function getConfig()
     {
-        if(NULL === self::$obj_config) {
+        if (null === self::$obj_config) {
             self::$obj_config = new JAPI\Config();
         }
         return self::$obj_config;
@@ -189,7 +200,7 @@ class JAPI
      */
     public static function getDuration($int_dp = 4)
     {
-        return round(microtime(TRUE) - self::$flt_startup, $int_dp);
+        return round(microtime(true) - self::$flt_startup, $int_dp);
     }
 
     /**
@@ -200,7 +211,7 @@ class JAPI
      */
     protected function log($int_level, $str_message)
     {
-        if(NULL === $this->obj_logger) {
+        if (null === $this->obj_logger) {
             $this->obj_logger = new JAPI\Logger();
         }
         $this->obj_logger->log($int_level, $str_message);
