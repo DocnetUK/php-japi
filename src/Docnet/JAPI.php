@@ -20,7 +20,7 @@ namespace Docnet;
 use \Docnet\JAPI\Exceptions\Routing as RoutingException;
 use \Docnet\JAPI\Exceptions\Auth as AuthException;
 use \Docnet\JAPI\Exceptions\Maintenance as MaintenanceException;
-use Docnet\JAPI\Exceptions\AccessDenied as AccessDeniedException;
+use \Docnet\JAPI\Exceptions\AccessDenied as AccessDeniedException;
 
 /**
  * Front controller for our JSON APIs
