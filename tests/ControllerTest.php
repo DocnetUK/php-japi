@@ -13,7 +13,7 @@ class ControllerTest extends PHPUnit_Framework_TestCase
     {
         $obj_controller = new Example();
         $obj_controller->dispatch();
-        $this->assertEquals($obj_controller->getResponse(), ['test' => TRUE]);
+        $this->assertEquals($obj_controller->getResponse(), ['test' => true]);
     }
 
     public function testQuery()
@@ -57,10 +57,10 @@ class ControllerTest extends PHPUnit_Framework_TestCase
 
     public function testCliHeaders()
     {
-        $_SERVER['HTTP_SOME_HEADER'] = TRUE;
+        $_SERVER['HTTP_SOME_HEADER'] = true;
         $obj_controller = new Headers();
         $obj_controller->dispatch();
-        $this->assertEquals($obj_controller->getResponse(), ['Some-Header' => TRUE]);
+        $this->assertEquals($obj_controller->getResponse(), ['Some-Header' => true]);
     }
 
     public function testJsonBodyParam()

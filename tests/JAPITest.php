@@ -96,7 +96,7 @@ class JAPITest extends PHPUnit_Framework_TestCase
         // Mock JAPI
         $obj_japi = $this->getMockBuilder('\\Docnet\\JAPI')->setMethods(['sendResponse'])->getMock();
         $obj_japi->expects($this->once())->method('sendResponse')->with(
-            $this->equalTo(['test' => TRUE]),
+            $this->equalTo(['test' => true]),
             $this->equalTo(200)
         );
 
